@@ -51,7 +51,7 @@ output_df["union_lower_var_h"] = (simulate_avg_h2.mean(axis=1) - 2 * simulate_av
 output_df["union_upper_var_h"] = (simulate_avg_h2.mean(axis=1) + 2 * simulate_avg_h2.std(axis=1)).max(axis=1).values.to(device="cpu").numpy()
 
 if args.rolling_mean:
-    output_df.to_csv(f"./output/simulation_n_neurons_{args.n_neurons}_max_time_{args.max_time}_rolling_mean")
+    output_df.to_csv(f"$DATA/output/simulation_n_neurons_{args.n_neurons}_max_time_{args.max_time}_n_paths_{args.n_paths}_rolling_mean")
 else:
-    output_df.to_csv(f"./output/simulation_n_neurons_{args.n_neurons}_max_time_{args.max_time}_actual")
+    output_df.to_csv(f"$DATA/output/simulation_n_neurons_{args.n_neurons}_max_time_{args.max_time}_{args.n_paths}_actual")
 
