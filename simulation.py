@@ -1,7 +1,6 @@
 import numpy as np
 
 import torch
-import torch.mps
 
 import math
 from tqdm import tqdm
@@ -38,7 +37,7 @@ def simulate_all(n_neurons : int = 100, T : int = 10, max_time : int or None = N
         time_arr = sample * torch.arange(max_point)
         max_time = sample * max_point # actual maximum time
 
-        print(f"case for n_neurons={n_neurons}, max_time={max_time}")
+        print(f"running on {device} for the case: n_neurons={n_neurons}, max_time={max_time}, n_paths={n_paths}", flush=True)
 
         # initialise underlying chain and neural network parameters
 
