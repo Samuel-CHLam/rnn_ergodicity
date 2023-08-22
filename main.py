@@ -14,8 +14,8 @@ parser.add_argument('--memorize', type=bool, default=True, help='if True then in
 parser.add_argument('--store_xz', type=bool, default=False, help='if True then return the input sequence as well')
 parser.add_argument('--seed', type=int, default=1234, help='seed for random number generation')
 parser.add_argument('--device', type=str, default='cuda', help='device for running simulation CPU/Cuda/MPS')
-parser.add_argument('--in_cluster', type=bool, default=True, help='if I am running in a cluster')
-parser.add_argument('--not_in_cluster', dest='in_cluster', action='store_false', help='flagged if I am not running in a cluster')
+parser.add_argument('--in_cluster', type=bool, default=True, help='True if running in a cluster')
+parser.add_argument('--not_in_cluster', dest='in_cluster', action='store_false', help='flag only if not running in a cluster')
 
 args = parser.parse_args()
 

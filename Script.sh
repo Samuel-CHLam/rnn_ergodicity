@@ -22,4 +22,4 @@ n_neurons=$(awk -v ArrayTaskID=$SLURM_ARRAY_TASK_ID '$1==ArrayTaskID {print $2}'
 max_time=$(awk -v ArrayTaskID=$SLURM_ARRAY_TASK_ID '$1==ArrayTaskID {print $3}' $config)
 n_paths=$(awk -v ArrayTaskID=$SLURM_ARRAY_TASK_ID '$1==ArrayTaskID {print $4}' $config)
 
-python -u main.py --n_neurons ${n_neurons} --max_time ${max_time} --n_paths ${n_paths} --no_rolling_mean > output.out
+python -u main.py --n_neurons ${n_neurons} --max_time ${max_time} --n_paths ${n_paths} --return_summary=True > output.out
