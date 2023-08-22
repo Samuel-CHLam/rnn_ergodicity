@@ -1,14 +1,14 @@
 import numpy as np
-
 import torch
-
 import math
 from tqdm import tqdm
+from scipy.stats import gaussian_kde
 
 def simulate_all(n_neurons : int = 100, T : int = 10, max_time : int or None = None, 
                  n_paths : int = 20, max_point : int or None = 500,
                  memorize : bool = True, rolling_mean : bool = False, store_xz : bool = False, 
-                 return_summary: bool = False, seed : int = 1234, use_device : str = "cuda"): 
+                 return_summary: bool = False, save_history: bool = False, 
+                 seed : int = 1234, use_device : str = "cuda"): 
 
     torch.manual_seed(seed)
 
@@ -117,8 +117,13 @@ def simulate_all(n_neurons : int = 100, T : int = 10, max_time : int or None = N
                 return simulate_avg_h, simulate_avg_h2, time_arr
 
         else:
-            simulate_h = torch.zeros((max_point, n_neurons, n_paths)).to(device=device)
-
+            if save_history == True:
+                if return_summary == True:
+                    simulate_h = np.zeros((max_point, 500))
+                    kde_positions = np.linspace(0,1,500)
+                else:
+                    simulate_h = torch.zeros((max_point, n_neurons, n_paths))
+            
             print("now simulate the neurons, storing history")
 
             for k in tqdm(range(1, max_time - 1)):
@@ -127,15 +132,25 @@ def simulate_all(n_neurons : int = 100, T : int = 10, max_time : int or None = N
                 new_simulant_xz = g(old_simulant_xz) - 0.5 + torch.rand(size=(n_paths,2), device=device)
                 old_simulant_xz = new_simulant_xz
 
-                if k % sample == 0:
-                    simulate_h[(k // sample)] = old_simulant_h
+                if save_history and (k % sample == 0):
+                    if return_summary == True:
+                        kernel = gaussian_kde(old_simulant_h.reshape(-1).to(device="cpu"))
+                        simulate_h[(k // sample)] = kernel(kde_positions)
+                    else:
+                        simulate_h[(k // sample)] = old_simulant_h.to(device="cpu")
 
-                    if store_xz == True: 
+                    if store_xz == True:
                         simulate_xz[(k // sample)] = old_simulant_xz
 
-            # del new_simulant_h, old_simulant_h, simulate_sum_h, simulate_sum_h2, new_simulant_xz, old_simulant_xz
-
-            if store_xz == True: 
-                return simulate_h, time_arr, simulate_xz
+            if save_history == False:
+                if return_summary == True:
+                    kde_positions = np.linspace(0,1,500)
+                    kernel = gaussian_kde(old_simulant_h.reshape(-1).to(device="cpu"))
+                    return kernel(kde_positions)
+                else:
+                    return old_simulant_h.to(device="cpu")
             else:
-                return simulate_h, time_arr
+                if store_xz == True: 
+                    return simulate_h, time_arr, simulate_xz
+                else:
+                    return simulate_h, time_arr
